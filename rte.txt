@@ -1,0 +1,313 @@
+ User 
+	ID        uint           `json:"id" gorm:"primaryKey"`
+	Email     string         `json:"email" gorm:"size:100;not null;unique"`
+	Password  string         `json:"password" gorm:"size:255;not null"`
+	RoleID    uint           `json:"role_id" gorm:"not null"`
+	IsActive  bool           `json:"is_active" gorm:"default:true"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+
+	Role Role `json:"role" gorm:"foreignKey:RoleID"`
+
+
+----------------------------------------------------------
+
+Role
+
+     ID        uuid.UUID `json:"id" gorm:"primaryKey"`
+	Name      string    `json:"name" gorm:"size:50;not null;unique"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+
+----------------------------------------------------------
+
+employee 
+
+    ID           uuid.UUID      `json:"id" gorm:"primaryKey"`
+	Name         string         `json:"name" gorm:"size:50;not null;unique"`
+	Dob          time.Time      `json:"dob"`
+	Email        string         `json:"email" validate:"required,email" gorm:"size:100;not null;unique"`
+	PhoneNumber  string         `json:"phone_number" gorm:"size:15;not null;unique"`
+	DepartmentId uuid.UUID      `json:"department_id" gorm:"not null"`
+	PositionId   uuid.UUID      `json:"position_id" gorm:"not null"`
+	UserId       uuid.UUID      `json:"user_id" gorm:"not null"`
+	IsActive     bool           `json:"is_active"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
+	DeletedAt    gorm.DeletedAt `json:"-" gorm:"index"`
+
+	Position   Position   `json:"position"`
+	Department Department `json:"department"`
+	User       User       `json:"user"`
+
+----------------------------------------------------------
+
+employeeBoardingStatus
+
+	ID          uuid.UUID      `json:"id" gorm:"primaryKey"`
+	EmployeeId  uuid.UUID      `json:"employee_id" gorm:"not null"`
+	Onboarding  time.Time      `json:"on_boarding"`
+	Offboarding time.Time      `json:"off_boarding"`
+	Status      bool           `json:"status"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
+
+	Employee Employee `json:"employee"`
+
+
+----------------------------------------------------------
+
+position 
+
+	ID          uuid.UUID      `json:"id" gorm:"primaryKey"`
+	Name        string         `json:"name" gorm:"size:50;not null;unique"`
+	Description string         `json:"description" gorm:"not null"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
+
+----------------------------------------------------------
+
+department
+
+    ID          uuid.UUID      `json:"id" gorm:"primaryKey"`
+	Name        string         `json:"name" gorm:"size:50;not null;unique"`
+	Description string         `json:"description" gorm:"not null"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
+
+----------------------------------------------------------
+
+attendance 
+
+	ID         uuid.UUID      `json:"id" gorm:"primaryKey"`
+	EmployeeId uuid.UUID      `json:"employee_id" gorm:"not null"`
+	TimeIn     time.Time      `json:"time_in"`
+	TimeOut    time.Time      `json:"time_out"`
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  time.Time      `json:"updated_at"`
+	DeletedAt  gorm.DeletedAt `json:"-" gorm:"index"`
+
+----------------------------------------------------------
+
+attendance_audit
+
+	ID           uuid.UUID `json:"id" gorm:"primaryKey"`
+	AttendanceId uuid.UUID `json:"attendance_id" gorm:"not null"`
+	EmployeeId   uuid.UUID `json:"employee_id" gorm:"not null"`
+	TimeIn       time.Time `json:"time_in"`
+	TimeOut      time.Time `json:"time_out"`
+
+----------------------------------------------------------
+
+payroll
+
+	ID         uuid.UUID      `json:"id" gorm:"primaryKey"`
+	EmployeeId uuid.UUID      `json:"employee_id" gorm:"not null"`
+	PositionId uuid.UUID      `json:"position_id" gorm:"not null"`
+	BasicPay   int            `json:"basic_pay"`
+	Salary     int            `json:"salary"`
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  time.Time      `json:"updated_at"`
+	DeletedAt  gorm.DeletedAt `json:"-" gorm:"index"`
+
+	Employee Employee `json:"employee"`
+	Position Position `json:"position"`
+
+----------------------------------------------------------
+
+leave request
+
+	ID         uuid.UUID      `json:"id" gorm:"primaryKey"`
+	EmployeeId uuid.UUID      `json:"employee_id" gorm:"not null"`
+	ReportedTo uuid.UUID      `json:"reported_to" gorm:"not null"`
+	Type       string         `json:"type"`
+	From       time.Time      `json:"from"`
+	To         time.Time      `json:"to"`
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  time.Time      `json:"updated_at"`
+	DeletedAt  gorm.DeletedAt `json:"-" gorm:"index"`
+
+	Employee Employee `json:"employee" gorm:"foreignKey:EmployeeId"`
+	Employer Employee `json:"employer" gorm:"foreignKey:ReportedTo"`
+
+----------------------------------------------------------
+
+leave
+
+	ID             uuid.UUID      `json:"id" gorm:"primaryKey"`
+	LeaveRequestId uuid.UUID      `json:"leave_request_id" gorm:"not null"`
+	EmployeeId     uuid.UUID      `json:"employee_id" gorm:"not null"`
+	MaxLeave       int            `json:"max_leave"`
+	LeaveTaken     int            `json:"Leave_taken"`
+	LeaveRemaining int            `json:"leave_remaining"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      time.Time      `json:"updated_at"`
+	DeletedAt      gorm.DeletedAt `json:"-" gorm:"index"`
+
+	Employee     Employee     `json:"employee"`
+	LeaveRequest LeaveRequest `json:"leave_equest"`
+
+----------------------------------------------------------
+
+probation
+
+	ID                 uuid.UUID      `json:"id" gorm:"primaryKey"`
+	EmployeeId         uuid.UUID      `json:"employee_id" gorm:"not null"`
+	ProbationStatus    string         `json:"probation_status"`
+	ProbationStartDate time.Time      `json:"probation_start_date"`
+	ProbationEndDate   time.Time      `json:"probation_end_date"`
+	ReviewedBy         uuid.UUID      `json:"reviewed_by"`
+	TaskCompleted      bool           `json:"task_completed"`
+	CreatedAt          time.Time      `json:"created_at"`
+	UpdatedAt          time.Time      `json:"updated_at"`
+	DeletedAt          gorm.DeletedAt `json:"-" gorm:"index"`
+
+	Employee Employee `json:"employee"`
+	Employer Employee `json:"employer" gorm:"foreignKey:ReviewedBy"`
+
+
+=========================================================================
+
+
+ENDPOINTS
+
+
+Auth
+
+	register.Post("/register", AuthHandler.Register) both
+	register.Post("/login", AuthHandler.Login) both
+
+total 2
+----------------------------------------------------------
+
+User 
+
+	user.Get("/", UserHandler.GetUser) admin
+	user.Get("/:id", UserHandler.GetUserById) admin
+	user.Patch("/:id", UserHandler.PatchUser)  both
+	user.Delete("/:id", UserHandler.DeleteUser) admin
+
+total 4
+----------------------------------------------------------
+
+role
+
+	role.Post("/", RoleHandler.CreateRoles) admin
+	role.Get("/", RoleHandler.GetRoles) both
+	role.Get("/:id", RoleHandler.GetRolesById) admin
+	role.Patch("/:id", RoleHandler.PatchRoles) admin
+	role.Delete("/:id", RoleHandler.DeleteRoles) admin
+
+total 5
+----------------------------------------------------------
+
+employee
+
+	Employee.Post("/",, EmployeeHandler.CreateEmployee) admin
+	Employee.Get("/",, EmployeeHandler.GetEmployee) admin
+	Employee.Get("/:id", EmployeeHandler.GetEmployeeById) both
+	Employee.Patch("/:id",, EmployeeHandler.PatchEmployee) both
+	Employee.Delete("/:id",  EmployeeHandler.DeleteEmployee) admin
+
+total 5
+----------------------------------------------------------
+
+position 
+
+	position.Post("/", PositionHandler.CreatePosition) admin
+	position.Get("/", PositionHandler.GetPosition) admin
+	position.Get("/:id", PositionHandler.GetPositionById) admin
+	position.Patch("/:id", PositionHandler.PatchPosition) admin
+	position.Delete("/:id", PositionHandler.DeletePosition) admin
+ 
+total 5
+----------------------------------------------------------
+
+department
+
+	department.Post("/", DepartmentHandler.CreateDepartment) admin
+	department.Get("/", DepartmentHandler.GetDepartment) both
+	department.Get("/:id", DepartmentHandler.GetDepartmentById) both
+	department.Patch("/:id", DepartmentHandler.PatchDepartment) admin
+	department.Delete("/:id", DepartmentHandler.DeleteDepartment) admin
+
+total 5
+----------------------------------------------------------
+
+EmployeeBoardingStatus
+
+	EmployeeBoardingStatus.Post("/", EmployeeBoardingStatusHandler.CreateEmployeeBoardingStatus) admin
+	EmployeeBoardingStatus.Get("/", EmployeeBoardingStatusHandler.GetEmployeeBoardingStatus) admin
+	EmployeeBoardingStatus.Get("/:id", EmployeeBoardingStatusHandler.GetEmployeeBoardingStatusById) both
+	EmployeeBoardingStatus.Patch("/:id", EmployeeBoardingStatusHandler.PatchEmployeeBoardingStatus) admin
+	EmployeeBoardingStatus.Delete("/:id", EmployeeBoardingStatusHandler.DeleteEmployeeBoardingStatus) admin
+
+
+total 5
+----------------------------------------------------------
+
+attendance 
+
+	Attendance.Post("/", AttendanceHandler.CreateAttendance) both
+	Attendance.Get("/",AttendanceHandler.GetAttendance) admin
+	Attendance.Get("/:id",AttendanceHandler.GetAttendanceById) both
+	Attendance.Delete("/:id",AttendanceHandler.DeleteAttendance) admin
+
+total 4
+----------------------------------------------------------
+
+AttendanceAudit
+
+	AttendanceAudit.Get("/",AttendanceAuditHandler.GetAttendanceAudit) admin
+	AttendanceAudit.Get("/:id",AttendanceAuditHandler.GetAttendanceAuditById) admin
+
+total 2
+----------------------------------------------------------
+
+payroll
+
+	Payroll.Post("/",PayrollHandler.CreatePayroll) admin
+	Payroll.Get("/",  PayrollHandler.GetPayroll) admin
+	Payroll.Get("/:id",  PayrollHandler.GetPayrollById) both
+	Payroll.Patch("/:id",  PayrollHandler.PatchPayroll) admin
+	Payroll.Delete("/:id",PayrollHandler.DeletePayroll) admin
+
+total 5
+----------------------------------------------------------
+
+leave request
+
+
+	LeaveRequest.Post("/", LeaveRequestHandler.CreateLeaveRequest) both
+	LeaveRequest.Get("/", LeaveRequestHandler.GetLeaveRequest) admin
+	LeaveRequest.Get("/:id", LeaveRequestHandler.GetLeaveRequestById) both
+	LeaveRequest.Patch("/:id", LeaveRequestHandler.PatchLeaveRequest) both
+
+total 4
+----------------------------------------------------------
+
+leave 
+
+	Leave.Get("/", LeaveHandler.GetLeave) admin
+	Leave.Get("/:id", LeaveHandler.GetLeaveById) both
+
+total 2
+----------------------------------------------------------
+
+probation
+
+	Probation.Post("/",ProbationHandler.CreateProbation) admin
+	Probation.Get("/",ProbationHandler.GetProbation) admin
+	Probation.Get("/:id",ProbationHandler.GetProbationById) both
+	Probation.Patch("/:id",ProbationHandler.PatchProbation) admin
+	Probation.Delete("/:id",ProbationHandler.DeleteProbation) admin
+
+total 5
+----------------------------------------------------------
+
+total 53
