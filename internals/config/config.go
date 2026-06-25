@@ -19,13 +19,14 @@ func Config() (string, error) {
 
 	var con models.ConnectionString
 
+	con.Host = os.Getenv("DB_HOST")
 	con.User = os.Getenv("DB_USER")
 	con.DBName = os.Getenv("DB_NAME")
 	con.Password = os.Getenv("DB_PASSWORD")
 	con.SslMode = os.Getenv("DB_SSLMODE")
 	con.Port = os.Getenv("DB_PORT")
 
-	connectionString := fmt.Sprintf("user=%s port=%s dbname=%s password=%s sslmode=%s", con.User, con.Port, con.DBName, con.Password, con.SslMode)
+	connectionString := fmt.Sprintf("host=%s user=%s port=%s dbname=%s password=%s sslmode=%s", con.Host, con.User, con.Port, con.DBName, con.Password, con.SslMode)
 
 	return connectionString, nil
 }
