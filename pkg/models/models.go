@@ -8,6 +8,7 @@ import (
 )
 
 type ConnectionString struct {
+	Host     string
 	User     string
 	DBName   string
 	Password string
