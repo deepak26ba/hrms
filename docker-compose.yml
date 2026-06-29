@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: hrms-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - type: bind
+        source: D:\new\deepak\Training\hrmsdb
+        target: /var/lib/postgresql/data
+
+    networks:
+      - hrms-network
+
+  hrms:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: hrms-app
+    restart: unless-stopped
+
+    depends_on:
+      - postgres
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - .env
+
+    environment:
+      DB_HOST: postgres
+
+    networks:
+      - hrms-network
+
+networks:
+  hrms-network:
+    driver: bridge

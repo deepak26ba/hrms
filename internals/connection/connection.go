@@ -1,10 +1,11 @@
 package connection
 
 import (
-	"fmt"
 	"hrms/internals/config"
 	"hrms/internals/migration"
 	"log"
+	"strconv"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -12,16 +13,32 @@ import (
 
 func InitDB() (*gorm.DB, error) {
 
+	var db *gorm.DB
+
 	connectionKey, err := config.Config()
 	if err != nil {
 		log.Fatal(err)
 		return nil, nil
 	}
 
-	db, err := gorm.Open(postgres.Open(connectionKey), &gorm.Config{})
+	maxRetryAttemptsString := config.GetMaxRetryAttempts()
+	maxRetryAttempts, err := strconv.Atoi(maxRetryAttemptsString)
 	if err != nil {
-		return nil, fmt.Errorf("Failed connecting to DB : %v", err)
+		log.Fatal(err)
+		return nil, nil
 	}
+
+	for range maxRetryAttempts {
+		db, err = gorm.Open(postgres.Open(connectionKey), &gorm.Config{})
+		if err == nil {
+			break
+		}
+
+		log.Println("Waiting for PostgreSQL...")
+		time.Sleep(2 * time.Second)
+	}
+
+	log.Println("Connected to PostgreSQL database successfully!")
 
 	err = migration.AutoMigrate(db)
 	if err != nil {
@@ -31,4 +48,8 @@ func InitDB() (*gorm.DB, error) {
 
 	return db, nil
 
+}
+
+func GetMaxRetryAttempts() any {
+	panic("unimplemented")
 }
