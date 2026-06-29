@@ -46,3 +46,7 @@ func GetClientID() string {
 func GetClientSecret() string {
 	return os.Getenv("CLIENT_SECRET")
 }
+
+func GetMaxRetryAttempts() string {
+	return os.Getenv("MAX_RETRY_ATTEMPTS")
+}
